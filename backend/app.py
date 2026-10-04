@@ -100,4 +100,5 @@ def get_forecast_log():
 
 if __name__ == "__main__":
     start_scheduler()
-    app.run(port=FLASK_PORT, debug=True, use_reloader=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
