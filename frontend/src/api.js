@@ -3,7 +3,7 @@
 // hit the backend more often than the data actually changes.
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
 const CACHE_PREFIX = 'swara_weather_xweather_cache_';
-
+const API_URL = import.meta.env.VITE_API_URL || '';
 function readCache(key) {
   try {
     const raw = localStorage.getItem(CACHE_PREFIX + key);
@@ -28,7 +28,7 @@ function writeCache(key, data) {
 }
 
 export async function fetchSites() {
-  const res = await fetch(`/api/sites`);
+  const res = await fetch(`${API_URL}/api/sites`);
   if (!res.ok) throw new Error(`Failed to load sites (${res.status})`);
   return res.json();
 }
@@ -41,7 +41,7 @@ export async function fetchWeather(siteName, { forceRefresh = false } = {}) {
     if (cached) return cached;
   }
 
-  const res = await fetch(`/api/weather?site=${encodeURIComponent(siteName)}`);
+  const res = await fetch(`${API_URL}/api/weather?site=${encodeURIComponent(siteName)}`);
   const contentType = res.headers.get('content-type') || '';
   if (!res.ok || !contentType.includes('application/json')) {
     throw new Error(`Backend returned ${res.status} ${res.statusText} (non-JSON response)`);
@@ -54,7 +54,7 @@ export async function fetchWeather(siteName, { forceRefresh = false } = {}) {
 export async function fetchForecastLog(siteName, dateStr) {
   const params = new URLSearchParams({ site: siteName });
   if (dateStr) params.set('date', dateStr);
-  const res = await fetch(`/api/forecast-log?${params.toString()}`);
+  const res = await fetch(`${API_URL}/api/forecast-log?${params.toString()}`);
   const contentType = res.headers.get('content-type') || '';
   if (!res.ok || !contentType.includes('application/json')) {
     throw new Error(`Backend returned ${res.status} ${res.statusText} (non-JSON response)`);
